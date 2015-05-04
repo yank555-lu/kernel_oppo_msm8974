@@ -23,6 +23,11 @@
 #include <media/msm_cam_sensor.h>
 #include <mach/camera2.h>
 #include "msm_sd.h"
+/*Added by Jinshui.Liu@Camera 20140221 start for cci error*/
+#ifdef CONFIG_VENDOR_EDIT
+#include <linux/wakelock.h>
+#endif
+/*Added by Jinshui.Liu@Camera 20140221 end*/
 
 #define NUM_MASTERS 2
 #define NUM_QUEUES 2

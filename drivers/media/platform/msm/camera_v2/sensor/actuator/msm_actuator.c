@@ -755,6 +755,7 @@ static int32_t msm_actuator_init(struct msm_actuator_ctrl_t *a_ctrl,
 #ifdef CONFIG_MACH_OPPO
 	a_ctrl->actuator_state = ACTUATOR_POWER_UP;
 #endif
+
 	CDBG("Exit\n");
 
 	return rc;
@@ -815,6 +816,14 @@ static int32_t msm_actuator_config(struct msm_actuator_ctrl_t *a_ctrl,
 		if (rc < 0)
 			pr_err("Failed actuator power up%d\n", rc);
 		break;
+	#ifdef VENDOR_EDIT
+	/*muyuezhong,2015/02/07,Add for close camera click*/
+    	case CFG_ACTUATOR_POWERDOWN:
+        	rc = msm_actuator_power_down(a_ctrl);
+		if (rc < 0)
+            		pr_err("Failed actuator power down %d\n", rc);
+		break;
+	#endif	
 
 	default:
 		break;

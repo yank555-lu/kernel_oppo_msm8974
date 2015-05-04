@@ -521,7 +521,6 @@ static int32_t msm_cci_i2c_read_bytes(struct v4l2_subdev *sd,
 		return -EINVAL;
 	}
 #endif
-
 	master = c_ctrl->cci_info->cci_i2c_master;
 	read_cfg = &c_ctrl->cfg.cci_i2c_read_cfg;
 	if ((!read_cfg->num_byte) || (read_cfg->num_byte > CCI_I2C_MAX_READ)) {
@@ -883,6 +882,13 @@ static int32_t msm_cci_config(struct v4l2_subdev *sd,
 		break;
 	default:
 		rc = -ENOIOCTLCMD;
+		}
+		if (rc >= 0) {
+			break;
+		} else {
+			pr_err("%s failed, retry is %d\n", __func__, retry);
+			usleep_range(10*1000, 20*1000);
+		}
 	}
 #ifdef CONFIG_MACH_OPPO
 		if (rc >= 0) {
