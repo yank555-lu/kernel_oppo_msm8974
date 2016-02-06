@@ -816,7 +816,7 @@ static int32_t msm_actuator_config(struct msm_actuator_ctrl_t *a_ctrl,
 		if (rc < 0)
 			pr_err("Failed actuator power up%d\n", rc);
 		break;
-	#ifdef VENDOR_EDIT
+	#ifdef CONFIG_MACH_OPPO
 	/*muyuezhong,2015/02/07,Add for close camera click*/
     	case CFG_ACTUATOR_POWERDOWN:
         	rc = msm_actuator_power_down(a_ctrl);
