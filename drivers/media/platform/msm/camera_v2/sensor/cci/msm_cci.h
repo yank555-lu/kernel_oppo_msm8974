@@ -16,18 +16,14 @@
 #include <linux/clk.h>
 #include <linux/io.h>
 #include <linux/platform_device.h>
-#ifdef CONFIG_MACH_OPPO
-#include <linux/wakelock.h>
-#endif
 #include <media/v4l2-subdev.h>
 #include <media/msm_cam_sensor.h>
 #include <mach/camera2.h>
 #include "msm_sd.h"
-/*Added by Jinshui.Liu@Camera 20140221 start for cci error*/
-#ifdef CONFIG_MACH_OPPO
+
+#ifdef CONFIG_MACH_MSM8974_14001
 #include <linux/wakelock.h>
 #endif
-/*Added by Jinshui.Liu@Camera 20140221 end*/
 
 #define NUM_MASTERS 2
 #define NUM_QUEUES 2
@@ -146,7 +142,7 @@ struct cci_device {
 	struct msm_cci_clk_params_t cci_clk_params[MASTER_MAX];
 	struct gpio *cci_gpio_tbl;
 	uint8_t cci_gpio_tbl_size;
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 	struct wake_lock cci_wakelock;
 #endif
 };

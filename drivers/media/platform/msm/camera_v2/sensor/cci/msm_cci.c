@@ -27,7 +27,7 @@
 #define CCI_I2C_QUEUE_0_SIZE 64
 #define CCI_I2C_QUEUE_1_SIZE 16
 #define CYCLES_PER_MICRO_SEC 4915
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 #define CCI_MAX_DELAY 100000
 
 #define CCI_TIMEOUT msecs_to_jiffies(500)
@@ -55,7 +55,7 @@
 
 static struct v4l2_subdev *g_cci_subdev;
 
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 static struct mutex ref_count_lock;
 #endif
 
@@ -514,9 +514,8 @@ static int32_t msm_cci_i2c_read_bytes(struct v4l2_subdev *sd,
 		pr_err("%s:%d Invalid I2C master addr\n", __func__, __LINE__);
 		return -EINVAL;
 	}
-
-#ifdef CONFIG_MACH_OPPO
-	if (cci_dev->cci_state == CCI_STATE_DISABLED) {
+#ifdef CONFIG_MACH_MSM8974_14001
+	if (cci_dev->cci_state == CCI_STATE_DISABLED){
 		pr_err("%s:%d cci state is DISABLED!\n", __func__, __LINE__);
 		return -EINVAL;
 	}
@@ -566,9 +565,8 @@ static int32_t msm_cci_i2c_write(struct v4l2_subdev *sd,
 		pr_err("%s:%d Invalid I2C master addr\n", __func__, __LINE__);
 		return -EINVAL;
 	}
-
-#ifdef CONFIG_MACH_OPPO
-	if (cci_dev->cci_state == CCI_STATE_DISABLED) {
+#ifdef CONFIG_MACH_MSM8974_14001
+	if (cci_dev->cci_state == CCI_STATE_DISABLED){
 		pr_err("%s:%d cci state is DISABLED!\n", __func__, __LINE__);
 		return -EINVAL;
 	}
@@ -735,7 +733,7 @@ static int32_t msm_cci_init(struct v4l2_subdev *sd,
 		return 0;
 	}
 
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 	wake_lock(&cci_dev->cci_wakelock);
 #endif
 	rc = msm_camera_request_gpio_table(cci_dev->cci_gpio_tbl,
@@ -787,7 +785,7 @@ clk_enable_failed:
 		cci_dev->cci_gpio_tbl_size, 0);
 request_gpio_failed:
 	cci_dev->ref_count--;
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 	wake_unlock(&cci_dev->cci_wakelock);
 #endif
 	return rc;
@@ -801,7 +799,7 @@ static int32_t msm_cci_release(struct v4l2_subdev *sd)
 	if (!cci_dev->ref_count || cci_dev->cci_state != CCI_STATE_ENABLED) {
 		pr_err("%s invalid ref count %d / cci state %d\n",
 			__func__, cci_dev->ref_count, cci_dev->cci_state);
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 		wake_unlock(&cci_dev->cci_wakelock);
 #endif
 		return -EINVAL;
@@ -820,7 +818,7 @@ static int32_t msm_cci_release(struct v4l2_subdev *sd)
 	msm_camera_request_gpio_table(cci_dev->cci_gpio_tbl,
 		cci_dev->cci_gpio_tbl_size, 0);
 
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 	wake_unlock(&cci_dev->cci_wakelock);
 #endif
 	cci_dev->cci_state = CCI_STATE_DISABLED;
@@ -832,17 +830,17 @@ static int32_t msm_cci_config(struct v4l2_subdev *sd,
 	struct msm_camera_cci_ctrl *cci_ctrl)
 {
 	int32_t rc = 0;
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 	int32_t retry = 5;
 #endif
 	CDBG("%s line %d cmd %d\n", __func__, __LINE__,
 		cci_ctrl->cmd);
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 	while (retry--) {
 #endif
 	switch (cci_ctrl->cmd) {
 	case MSM_CCI_INIT:
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 		mutex_lock(&ref_count_lock);
 		rc = msm_cci_init(sd, cci_ctrl);
 		mutex_unlock(&ref_count_lock);
@@ -851,7 +849,7 @@ static int32_t msm_cci_config(struct v4l2_subdev *sd,
 #endif
 		break;
 	case MSM_CCI_RELEASE:
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 		mutex_lock(&ref_count_lock);
 		rc = msm_cci_release(sd);
 		mutex_unlock(&ref_count_lock);
@@ -860,7 +858,7 @@ static int32_t msm_cci_config(struct v4l2_subdev *sd,
 #endif
 		break;
 	case MSM_CCI_I2C_READ:
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 		mutex_lock(&ref_count_lock);
 		rc = msm_cci_i2c_read_bytes(sd, cci_ctrl);
 		mutex_unlock(&ref_count_lock);
@@ -870,7 +868,7 @@ static int32_t msm_cci_config(struct v4l2_subdev *sd,
 		break;
 	case MSM_CCI_I2C_WRITE:
 	case MSM_CCI_I2C_WRITE_SEQ:
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 		mutex_lock(&ref_count_lock);
 		rc = msm_cci_i2c_write(sd, cci_ctrl);
 		mutex_unlock(&ref_count_lock);
@@ -890,7 +888,7 @@ static int32_t msm_cci_config(struct v4l2_subdev *sd,
 			usleep_range(10*1000, 20*1000);
 		}
 	}
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 		if (rc >= 0) {
 			break;
 		} else {
@@ -1273,7 +1271,7 @@ static int __devinit msm_cci_probe(struct platform_device *pdev)
 	g_cci_subdev = &new_cci_dev->msm_sd.sd;
 	CDBG("%s cci subdev %p\n", __func__, &new_cci_dev->msm_sd.sd);
 	CDBG("%s line %d\n", __func__, __LINE__);
-#ifdef CONFIG_MACH_OPPO
+#ifdef CONFIG_MACH_MSM8974_14001
 	wake_lock_init(&new_cci_dev->cci_wakelock, WAKE_LOCK_SUSPEND,
 			"msm_cci_wakelock");
 	mutex_init(&ref_count_lock);
