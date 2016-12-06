@@ -312,8 +312,8 @@ struct buffer_info *device_to_uvaddr(struct msm_vidc_list *buf_list,
 
 	if (!buf_list || !device_addr) {
 		dprintk(VIDC_ERR,
-			"Invalid input- device_addr: %u buf_list: %pK\n",
-			device_addr, buf_list);
+			"Invalid input- list: %pK device_addr: %u inst: %pK\n",
+			list, device_addr, inst);
 		goto err_invalid_input;
 	}
 	mutex_lock(&buf_list->lock);
@@ -621,7 +621,7 @@ int unmap_and_deregister_buf(struct msm_vidc_inst *inst,
 		if (temp->handle[i] && temp->mapped[i] &&
 			!temp->same_fd_ref[i]) {
 			dprintk(VIDC_DBG,
-				"[UNMAP] - handle[%d] = %p fd[%d] = %d",
+				"[UNMAP] - handle[%d] = %pK fd[%d] = %d",
 				i, temp->handle[i], i, temp->fd[i]);
 			msm_comm_smem_free(inst,
 				temp->handle[i]);
