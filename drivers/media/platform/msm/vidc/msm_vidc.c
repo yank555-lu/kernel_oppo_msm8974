@@ -235,8 +235,8 @@ struct buffer_info *get_registered_buf(struct msm_vidc_inst *inst,
 	}
 
 	*plane = 0;
-	mutex_lock(&inst->registeredbufs.lock);
-	list_for_each_entry(temp, &inst->registeredbufs.list, list) {
+	mutex_lock(&inst->lock);
+	list_for_each_entry(temp, list, list) {
 		for (i = 0; (i < temp->num_planes)
 			&& (i < VIDEO_MAX_PLANES); i++) {
 			bool ion_hndl_matches =
@@ -262,7 +262,7 @@ struct buffer_info *get_registered_buf(struct msm_vidc_inst *inst,
 		if (ret)
 			break;
 	}
-	mutex_unlock(&inst->registeredbufs.lock);
+	mutex_unlock(&inst->lock);
 err_invalid_input:
 	return ret;
 }
@@ -579,8 +579,8 @@ int unmap_and_deregister_buf(struct msm_vidc_inst *inst,
 		return -EINVAL;
 	}
 
-	mutex_lock(&inst->registeredbufs.lock);
-
+	mutex_lock(&inst->lock);
+	list = &inst->registered_bufs;
 	/*
 	* Make sure the buffer to be unmapped and deleted
 	* from the registered list is present in the list.
@@ -643,7 +643,7 @@ int unmap_and_deregister_buf(struct msm_vidc_inst *inst,
 		dprintk(VIDC_DBG, "[UNMAP] NOT-FREED binfo: %pK\n", temp);
 	}
 exit:
-	mutex_unlock(&inst->registeredbufs.lock);
+	mutex_unlock(&inst->lock);
 	return 0;
 }
 
