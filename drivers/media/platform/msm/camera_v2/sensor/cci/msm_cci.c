@@ -831,24 +831,21 @@ static int32_t msm_cci_release(struct v4l2_subdev *sd)
 static int32_t msm_cci_config(struct v4l2_subdev *sd,
 	struct msm_camera_cci_ctrl *cci_ctrl)
 {
-	int32_t rc = 0;
-#ifdef CONFIG_MACH_MSM8974_14001
-	int32_t retry = 5;
-#endif
+	int32_t rc = 0, retry = 5;
 	CDBG("%s line %d cmd %d\n", __func__, __LINE__,
 		cci_ctrl->cmd);
-#ifdef CONFIG_MACH_MSM8974_14001
+
 	while (retry--) {
-#endif
+
 	switch (cci_ctrl->cmd) {
 	case MSM_CCI_INIT:
 #ifdef CONFIG_MACH_MSM8974_14001
 		mutex_lock(&ref_count_lock);
-	CDBG("%s line %d cmd %d\n", __func__, __LINE__,
-		cci_ctrl->cmd);
-	switch (cci_ctrl->cmd) {
-	case MSM_CCI_INIT:
 		rc = msm_cci_init(sd, cci_ctrl);
+		mutex_unlock(&ref_count_lock);
+#else
+		rc = msm_cci_init(sd, cci_ctrl);
+#endif
 		break;
 	case MSM_CCI_RELEASE:
 #ifdef CONFIG_MACH_MSM8974_14001
@@ -857,6 +854,7 @@ static int32_t msm_cci_config(struct v4l2_subdev *sd,
 		mutex_unlock(&ref_count_lock);
 #else
 		rc = msm_cci_release(sd);
+#endif
 		break;
 	case MSM_CCI_I2C_READ:
 #ifdef CONFIG_MACH_MSM8974_14001
@@ -865,34 +863,30 @@ static int32_t msm_cci_config(struct v4l2_subdev *sd,
 		mutex_unlock(&ref_count_lock);
 #else
 		rc = msm_cci_i2c_read_bytes(sd, cci_ctrl);
+#endif
 		break;
 	case MSM_CCI_I2C_WRITE:
 	case MSM_CCI_I2C_WRITE_SEQ:
 #ifdef CONFIG_MACH_MSM8974_14001
 		mutex_lock(&ref_count_lock);
 		rc = msm_cci_i2c_write(sd, cci_ctrl);
+		mutex_unlock(&ref_count_lock);
+#else
+			rc = msm_cci_i2c_write(sd, cci_ctrl);
+#endif
 		break;
 	case MSM_CCI_GPIO_WRITE:
 		break;
 	default:
 		rc = -ENOIOCTLCMD;
-		}
 		if (rc >= 0) {
 			break;
 		} else {
 			pr_err("%s failed, retry is %d\n", __func__, retry);
 			usleep_range(10*1000, 20*1000);
 		}
-	}
-#ifdef CONFIG_MACH_MSM8974_14001
-		if (rc >= 0) {
-			break;
-		} else {
-			pr_err("%s failed, retry is %d\n", __func__, retry);
-			usleep_range(10 * 1000, 20 * 1000);
 		}
 	}
-#endif
 	CDBG("%s line %d rc %d\n", __func__, __LINE__, rc);
 	cci_ctrl->status = rc;
 	return rc;
