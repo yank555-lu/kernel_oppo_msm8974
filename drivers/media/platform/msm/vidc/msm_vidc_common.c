@@ -604,7 +604,7 @@ static void handle_event_change(enum command_response cmd, void *data)
 					"RELEASE REFERENCE EVENT FROM F/W - fd = %d offset = %d\n",
 					ptr[0], ptr[1]);
 
-				mutex_lock(&inst->registeredbufs.lock);
+				mutex_lock(&inst->sync_lock);
 				/* Decrement buffer reference count*/
 				buf_ref_put(inst, binfo);
 
@@ -615,7 +615,7 @@ static void handle_event_change(enum command_response cmd, void *data)
 				if (unmap_and_deregister_buf(inst, binfo))
 					dprintk(VIDC_ERR,
 					"%s: buffer unmap failed\n", __func__);
-				mutex_unlock(&inst->registeredbufs.lock);
+				mutex_unlock(&inst->sync_lock);
 
 				/*send event to client*/
 				v4l2_event_queue_fh(&inst->event_handler,
