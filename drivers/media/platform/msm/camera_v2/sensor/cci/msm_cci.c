@@ -27,11 +27,13 @@
 #define CCI_I2C_QUEUE_0_SIZE 64
 #define CCI_I2C_QUEUE_1_SIZE 16
 #define CYCLES_PER_MICRO_SEC 4915
+
 #ifdef CONFIG_MACH_MSM8974_14001
 #define CCI_MAX_DELAY 100000
 
 #define CCI_TIMEOUT msecs_to_jiffies(500)
 #else
+
 #define CCI_MAX_DELAY 10000
 
 #define CCI_TIMEOUT msecs_to_jiffies(100)
@@ -842,11 +844,11 @@ static int32_t msm_cci_config(struct v4l2_subdev *sd,
 	case MSM_CCI_INIT:
 #ifdef CONFIG_MACH_MSM8974_14001
 		mutex_lock(&ref_count_lock);
+	CDBG("%s line %d cmd %d\n", __func__, __LINE__,
+		cci_ctrl->cmd);
+	switch (cci_ctrl->cmd) {
+	case MSM_CCI_INIT:
 		rc = msm_cci_init(sd, cci_ctrl);
-		mutex_unlock(&ref_count_lock);
-#else
-		rc = msm_cci_init(sd, cci_ctrl);
-#endif
 		break;
 	case MSM_CCI_RELEASE:
 #ifdef CONFIG_MACH_MSM8974_14001
@@ -855,7 +857,6 @@ static int32_t msm_cci_config(struct v4l2_subdev *sd,
 		mutex_unlock(&ref_count_lock);
 #else
 		rc = msm_cci_release(sd);
-#endif
 		break;
 	case MSM_CCI_I2C_READ:
 #ifdef CONFIG_MACH_MSM8974_14001
@@ -864,17 +865,12 @@ static int32_t msm_cci_config(struct v4l2_subdev *sd,
 		mutex_unlock(&ref_count_lock);
 #else
 		rc = msm_cci_i2c_read_bytes(sd, cci_ctrl);
-#endif
 		break;
 	case MSM_CCI_I2C_WRITE:
 	case MSM_CCI_I2C_WRITE_SEQ:
 #ifdef CONFIG_MACH_MSM8974_14001
 		mutex_lock(&ref_count_lock);
 		rc = msm_cci_i2c_write(sd, cci_ctrl);
-		mutex_unlock(&ref_count_lock);
-#else
-		rc = msm_cci_i2c_write(sd, cci_ctrl);
-#endif
 		break;
 	case MSM_CCI_GPIO_WRITE:
 		break;
